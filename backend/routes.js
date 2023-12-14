@@ -5,7 +5,25 @@ const router = express.Router();
 
 const COOKIE_NAME = "auth-lab-session";
 
-// This request will check session status
+/**
+ * @swagger
+ * /session:
+ *   get:
+ *     summary: Retrieves the session information
+ *     tags:
+ *       - Session
+ *     responses:
+ *       200:
+ *         description: The session information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Session'
+ *       401:
+ *         description: Unauthorized
+ *     security:
+ *       - bearerAuth: []
+ */
 router.get("/session", (req, res) => {
   const sessionCookie = req.cookies[COOKIE_NAME];
 
@@ -20,7 +38,38 @@ router.get("/session", (req, res) => {
   else res.status(401).send("Unauthorized");
 });
 
-// This request will create a new session if credentials are correct
+/**
+ * @swagger
+ * /signIn:
+ *   post:
+ *     summary: Creates a new session if credentials are correct
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: The session was successfully created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Session'
+ *       401:
+ *         description: Unauthorized
+ *     security:
+ *       - bearerAuth: []
+ */
 router.post("/signIn", (req, res) => {
   const { username, password } = req.body;
   const session = controller.createSession(username, password);
@@ -40,7 +89,21 @@ router.post("/signIn", (req, res) => {
     .send(session.user);
 });
 
-// This request will remove the session
+/**
+ * @swagger
+ * /signOut:
+ *   post:
+ *     summary: Ends the session and clears the session cookie
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       204:
+ *         description: The session was successfully ended
+ *       401:
+ *         description: Unauthorized
+ *     security:
+ *       - bearerAuth: []
+ */
 router.post("/signOut", (req, res) => {
   const sessionCookie = req.cookies[COOKIE_NAME];
 
